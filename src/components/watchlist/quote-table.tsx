@@ -6,7 +6,7 @@ import {
   ArrowTrendingUpIcon,
   BellAlertIcon,
   TrashIcon,
-} from "@/components/icons";
+} from "@heroicons/react/24/outline";
 import clsx from "clsx";
 import { formatChange, formatPercent, formatPrice, formatTimestamp, getChange } from "@/lib/format";
 import type { AlertRule, Quote } from "@/lib/types";

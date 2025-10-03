@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useQuery, type UseQueryResult } from "@tanstack/react-query";
-import { ArrowPathIcon, LinkIcon, PlusIcon } from "@/components/icons";
+import { ArrowPathIcon, LinkIcon, PlusIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 import { QuoteTable } from "./quote-table";
 import { useWatchlist } from "@/hooks/use-watchlist";

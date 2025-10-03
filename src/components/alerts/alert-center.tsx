@@ -1,6 +1,6 @@
 "use client";
 
-import { BellAlertIcon, CheckCircleIcon, XMarkIcon } from "@/components/icons";
+import { BellAlertIcon, CheckCircleIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 import type { AlertRule } from "@/lib/types";
 
