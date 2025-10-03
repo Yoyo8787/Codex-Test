@@ -20,6 +20,10 @@ npm run dev
 
 開發伺服器預設執行於 `http://localhost:3000`。
 
+### 開發伺服器驗證
+
+執行 `npm run dev` 後，瀏覽器開啟 `http://localhost:3000` 應顯示自選股儀表板而無錯誤訊息。若在企業網路環境下執行，請確認代理設定讓 Finnhub/Yahoo API 能夠正常透過伺服器端路由存取。
+
 ### 環境變數
 
 建立 `.env.local` 並參考 `.env.local.example`：

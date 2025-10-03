@@ -1,5 +1,7 @@
 "use client";
 
+import { ReactNode, useEffect, useId, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment, ReactNode } from "react";
 
@@ -11,44 +13,89 @@ interface ModalProps {
 }
 
 export function Modal({ open, onClose, title, children }: ModalProps) {
-  return (
-    <Transition appear show={open} as={Fragment}>
-      <Dialog as="div" className="relative z-50" onClose={onClose}>
-        <Transition.Child
-          as={Fragment}
-          enter="ease-out duration-200"
-          enterFrom="opacity-0"
-          enterTo="opacity-100"
-          leave="ease-in duration-150"
-          leaveFrom="opacity-100"
-          leaveTo="opacity-0"
-        >
-          <div className="fixed inset-0 bg-black/70" />
-        </Transition.Child>
+  const [mounted, setMounted] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const titleId = useId();
 
-        <div className="fixed inset-0 overflow-y-auto">
-          <div className="flex min-h-full items-center justify-center p-4">
-            <Transition.Child
-              as={Fragment}
-              enter="ease-out duration-200"
-              enterFrom="opacity-0 scale-95"
-              enterTo="opacity-100 scale-100"
-              leave="ease-in duration-150"
-              leaveFrom="opacity-100 scale-100"
-              leaveTo="opacity-0 scale-95"
-            >
-              <Dialog.Panel className="w-full max-w-3xl transform overflow-hidden rounded-2xl bg-surface p-6 text-left shadow-xl transition-all">
-                {title && (
-                  <Dialog.Title className="text-lg font-semibold text-slate-100">
-                    {title}
-                  </Dialog.Title>
-                )}
-                <div className="mt-4 text-slate-200">{children}</div>
-              </Dialog.Panel>
-            </Transition.Child>
+  useEffect(() => {
+    setMounted(true);
+    return () => setMounted(false);
+  }, []);
+
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        onClose();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [open, onClose]);
+
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    const node = containerRef.current;
+    node?.focus({ preventScroll: true });
+  }, [open]);
+
+  if (!mounted || !open) {
+    return null;
+  }
+
+  return createPortal(
+    <div className="fixed inset-0 z-50 flex min-h-screen items-center justify-center p-4">
+      <div
+        className="absolute inset-0 bg-black/70"
+        aria-hidden="true"
+        onClick={onClose}
+      />
+      <div
+        ref={containerRef}
+        tabIndex={-1}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={title ? titleId : undefined}
+        className="relative z-10 w-full max-w-3xl transform overflow-hidden rounded-2xl bg-surface p-6 text-left shadow-xl transition-all"
+      >
+        {title && (
+          <div id={titleId} className="text-lg font-semibold text-slate-100">
+            {title}
           </div>
-        </div>
-      </Dialog>
-    </Transition>
+        )}
+        <div className="mt-4 text-slate-200">{children}</div>
+        <button
+          type="button"
+          onClick={onClose}
+          className="absolute right-4 top-4 rounded-full bg-slate-700/70 p-1 text-slate-200 transition hover:bg-slate-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+          aria-label="關閉"
+        >
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+    </div>,
+    document.body
   );
 }
